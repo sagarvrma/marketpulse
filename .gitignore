@@ -1,0 +1,33 @@
+# Java
+*.class
+*.jar
+*.war
+*.log
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# VS Code
+.vscode/
+
+# Gradle
+.gradle/
+build/
+
+# Maven
+target/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Secrets
+application.properties
