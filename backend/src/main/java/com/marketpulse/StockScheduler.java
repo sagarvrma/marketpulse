@@ -9,6 +9,7 @@ import com.marketpulse.model.Alert;
 import com.marketpulse.repository.NewsArticleRepository;
 import com.marketpulse.repository.StockPriceRepository;
 import com.marketpulse.repository.AlertRepository;
+import com.marketpulse.service.TickerService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -28,6 +29,7 @@ public class StockScheduler {
     private final StockPriceRepository repository;
     private final NewsArticleRepository newsRepository;
     private final AlertRepository alertRepository;
+    private final TickerService tickerService;
 
     @Value("${newsapi.api.key}")
     private String newsApiKey;
@@ -38,14 +40,18 @@ public class StockScheduler {
     @Value("${sentiment.api.url}")
     private String sentimentApiUrl;
 
-    public StockScheduler(StockPriceRepository repository, NewsArticleRepository newsRepository, AlertRepository alertRepository) {
+    public StockScheduler(StockPriceRepository repository,
+                          NewsArticleRepository newsRepository,
+                          AlertRepository alertRepository,
+                          TickerService tickerService) {
         this.repository = repository;
         this.newsRepository = newsRepository;
         this.alertRepository = alertRepository;
+        this.tickerService = tickerService;
     }
 
     public void fetchStockPrices() {
-        String[] tickers = {"TSLA", "AAPL", "MSFT"};
+        List<String> tickers = tickerService.getTickers();
 
         for (String ticker : tickers) {
             try {
@@ -90,7 +96,7 @@ public class StockScheduler {
 
     @SuppressWarnings("unchecked")
     public void fetchNewsAndAnalyzeSentiment() {
-        String[] tickers = {"TSLA", "AAPL", "MSFT"};
+        List<String> tickers = tickerService.getTickers();
 
         for (String ticker : tickers) {
             try {
@@ -138,7 +144,7 @@ public class StockScheduler {
     }
 
     public void checkAndTriggerAlerts() {
-        String[] tickers = {"TSLA", "AAPL", "MSFT"};
+        List<String> tickers = tickerService.getTickers();
 
         for (String ticker : tickers) {
             List<StockPrice> prices = repository.findTop2ByTickerIgnoreCaseOrderByTimestampDesc(ticker);
